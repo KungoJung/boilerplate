@@ -3,8 +3,9 @@ const chalk = require("chalk")
 const path = require('path');
 const morgan = require('morgan');
 const bodyParser = require("body-parser");
+const { db } = require("./db");
 
-const app = express()
+const app = express();
 
 // logging middleware
 app.use(morgan("dev"));
@@ -21,19 +22,26 @@ app.use('/api', require('./api')); // include our routes!
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'))
-}) // Send index.html for any other requests
+}); // Send index.html for any other requests
 
 // error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack)
+  console.error(err.stack);
   res.status(err.status || 500).send(err.message || 'Internal server error')
 });
 
 
+// Optionally, export app and move the following code into its own file (like start.js)
+
 // Start The Server
 const port = process.env.PORT || 3000; // this can be very useful if you deploy to Heroku!
-app.listen(port, function () {
-  console.log(chalk.cyan(`Your server is listening on port ${port}`));
-});
+
+// be sure to take out {force: true} in production
+db.sync( {force: true} )
+  .then(function () {
+    app.listen(port, function () {
+      console.log(chalk.cyan(`Your server is listening on port ${port}`));
+    });
+  });
 
 module.exports = app
