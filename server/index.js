@@ -10,20 +10,7 @@ const passport = require('passport')
 const app = express();
 
 // Keep all your app's secret API keys in a file called 'secrets.js' in the project's root. Include it in the .gitignore file too. On the production server, add these keys as environment variables, so that they can still be read by the Node process on process.env
-if (process.env.NODE_ENV !== "production") require("../secrets")
-
-// Passport Registration
-passport.serializeUser((user, done) => done(null, user.id))
-// Example model will likely be a User
-passport.deserializeUser(async (id, done) => {
-  try {
-    console.log("Inside deserialize user. id:", id)
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (err) {
-    done(err)
-  }
-})
+// if (process.env.NODE_ENV !== "production") require("../secrets")
 
 // logging middleware
 app.use(morgan("dev"));
@@ -77,7 +64,7 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 3000; // this can be very useful if you deploy to Heroku!
 
 // be sure to take out {force: true} in production
-db.sync( {force: true} )
+db.sync(  )
   .then(function () {
     app.listen(port, function () {
       console.log(chalk.cyan(`Your server is listening on port ${port}`));
